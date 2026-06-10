@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 import FeaturesModel from "../models/FeaturesModel.js";
+import LegalModel from "../models/LegalModel.js";
 
 
 
@@ -19,4 +20,20 @@ export const FeaturesServices = async(req, res) => {
   }
 };
 
-export default FeaturesServices;
+
+export const LegalDetailsServices = async (req) => {
+  try {
+    let type = req.params.type;
+    let data = await LegalModel.find({type:type});
+    return {
+      status: "success",
+      message: "LegalDetailsServices connected",
+      data: data,
+    };
+  } catch (error) {
+    return { status: "error", message: "LegalDetailsServices error", error: error.message };
+  }
+}
+
+
+export default {FeaturesServices,LegalDetailsServices};

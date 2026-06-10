@@ -82,10 +82,11 @@ export const SaveCartListService = async (req) => {
     let user_id = req.headers.user_id;
     let reqBody = req.body;
     reqBody.userID = user_id;
-    await CartModel.create(reqBody);
+    console.log(reqBody);
+    let data = await CartModel.create(reqBody);
     return { status: "success", message: "Cart save" };
   } catch (error) {
-    return { status: "errors...", message: error.message };
+    return { status: "SaveCartListService error", message: error.message };
   }
 };
 

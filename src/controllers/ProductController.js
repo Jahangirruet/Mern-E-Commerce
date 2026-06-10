@@ -9,6 +9,7 @@ import { ListByRemarkService } from "../services/ProductServices.js";
 import { DetailsService } from "../services/ProductServices.js";
 import { ReviewListService } from "../services/ProductServices.js";
 import { CreateReviewService } from "../services/ProductServices.js";
+import { ListByFilterService } from "../services/ProductServices.js";
 
 export const ProductBrandList = async (req, res) => {
   let data = await BrandListService(req);
@@ -64,3 +65,8 @@ export const CreateReview = async function (req, res) {
   let data = await CreateReviewService(req);
   return res.status(200).json(data);
 };
+
+export const ProductListByFilter = async function (req, res) {
+  let data = await ListByFilterService(req);
+  return res.status(200).json(data);
+}

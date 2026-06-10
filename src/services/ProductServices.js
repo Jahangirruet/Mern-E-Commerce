@@ -21,7 +21,7 @@ export const BrandListService = async (req) => {
       data: data,
     };
   } catch (error) {
-    return { status: "error", message: "BrandListService error", error: error };
+    return { status: "error", message: "BrandListService error", error: error.message };
   }
 };
 export const CategoryListService = async (req) => {
@@ -275,6 +275,93 @@ export const ListBySimilierService = async (req) => {
   }
 };
 
+export const ListByFilterService = async (req) => {
+  try {
+    let matchCondition = {};
+
+    if (req.body['categoryID']){
+      matchCondition.categoryID = new ObjectID(req.body['categoryID']);
+    }
+
+    if (req.body['brandID']){
+      matchCondition.brandID = new ObjectID(req.body['brandID']);
+    }
+
+    let MatchStage = { $match: matchCondition };
+
+    let AddFieldsStage = {
+      $addFields: {
+        numericPrice:{$toInt:"$price"}
+    }
+  }
+  let priceMin = parseInt(req.body['priceMin']);
+  let priceMax = parseInt(req.body['priceMax']);
+
+  let PriceMatchConditions = {};
+
+  if (!isNaN(priceMin)){
+    PriceMatchConditions['numericPrice']={$gte:priceMin};
+  }
+
+  
+  if (!isNaN(priceMax)){
+    PriceMatchConditions['numericPrice']={...PriceMatchConditions['numericPrice'],$lte:priceMax};
+  }
+
+  let PriceMatchStage = {$match:PriceMatchConditions};
+  let JoinWithBrandStage = {
+      $lookup: {from: "brands",
+      localField: "brandID",
+      foreignField: "_id",
+      as: "brand",
+      },
+  };
+  let JoinWithCategoryStage = {
+      $lookup: {
+        from: "categories",
+        localField: "categoryID",
+        foreignField: "_id",
+        as: "category",
+      },
+  };
+  let UnwindBranStage = {$unwind:"$brand"};
+  let UnwindCategoryStage = {$unwind:"$category"};
+  let ProjectionStage = {
+    $project: {
+        "brand._id": 0,
+        "category._id": 0,
+        categoryID: 0,
+        brandID: 0,
+ 
+      },
+  };
+
+  let data = await ProductModel.aggregate([
+    MatchStage,
+    AddFieldsStage,
+    PriceMatchStage,
+    JoinWithBrandStage,
+    JoinWithCategoryStage,
+    UnwindBranStage,
+    UnwindCategoryStage,
+    ProjectionStage,
+  ]);
+
+  return {
+    status: "success",
+    message: "ListByFilterService connected",
+    data: data,
+  };
+
+  } catch (error) {
+    return {
+      status: "error",
+      message: "ListByFilterService error",
+      error: error.message,
+    };
+  }
+}
+
 export const DetailsService = async (req) => {
   try {
     let ProductID = new ObjectID(req.params.ProductID);
@@ -346,9 +433,9 @@ export const ListByKeywordService = async (req) => {
   try {
     let SearchRegex = { $regex: req.params.Keyword, $options: "i" };
     let Searchparams = [{ title: SearchRegex }, { shortDes: SearchRegex }];
-    let SearchStage = { $or: Searchparams };
+    let SearchQuery = { $or: Searchparams };
 
-    let MatchStage = { $match: {} };
+    let MatchStage = { $match: SearchQuery };
 
     let JoinWithBrandStage = {
       $lookup: {
@@ -454,7 +541,7 @@ export const CreateReviewService = async (req) => {
     let reqBody = req.body;
 
     let data = await ReviewModel.create({
-      productID: reqBody["product_id"],
+      productID: reqBody["productID"],
       userID: user_id,
       des: reqBody["des"],
       rating: reqBody["rating"],
@@ -480,6 +567,7 @@ export default {
   SliderListService,
   ListByBrandService,
   ListByCatagoryService,
+  ListByFilterService,
   DetailsService,
   ListByKeywordService,
   ListBySimilierService,

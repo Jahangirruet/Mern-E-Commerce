@@ -1,16 +1,9 @@
-import { OTPService,VerifyOTPService,SaveProfileServicee,ReadProfileService } from "../services/UserServices.js";
+import { SaveProfileServicee,ReadProfileService,UserRegistrationService,VerifyLoginService } from "../services/UserServices.js";
 
-export const UserOTP = async function (req, res) {
-  try {
-    let result = await OTPService(req);
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(400).json({ status: "error", Message: error.message });
-  }
-};
+
 
 export const VerifyLogin = async function (req, res) {
-    let result = await VerifyOTPService(req);
+    let result = await VerifyLoginService(req);
     if(result['status'] == 'success'){
         // cookie option
         let cookieOption = {
@@ -26,6 +19,23 @@ export const VerifyLogin = async function (req, res) {
     }
     
 };
+export const UserRegistration = async (req, res) => {
+  try {
+    const result = await UserRegistrationService(req);
+
+    // Return 400 if service returns an error
+    if (result.status === "error") {
+      return res.status(400).json(result);
+    }
+
+    return res.status(201).json(result);
+
+  } catch (error) {
+    return res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+
 
 export const UserLogout = async function (req, res) {
   try {
@@ -33,14 +43,13 @@ export const UserLogout = async function (req, res) {
             expires: new Date(Date.now() - 24 * 60 * 60 * 1000),
             httpOnly: false,
         }
-        // set cooke with response
         res.cookie("token", "", cookieOption);
-        console.log(cookieOption)
-        return res.status(200).json({status:"success",message:"logout successfully"},);
+
+        return res.status(200).json({status:"success",message:"logout successfully",cookie:cookieOption},);
   } catch (error) {
     return res.status(400).json({ status: "error", Message: error.message });
   }
-      
+     
 };
 
 export const CreateProfile = async function (req, res) {

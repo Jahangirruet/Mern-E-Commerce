@@ -1,0 +1,22 @@
+name: Deploy Express App
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /root/your-repo
+            git pull origin main
+            npm install
+            pm2 restart my-app || pm2 start app.js --name MERN-E-Commerce

@@ -219,7 +219,7 @@ export const InvoiceProductListService = async (req, res) => {
         let LookupStage = { $lookup: { from: "products", localField: "productID", foreignField: "_id", as: "product" } };
         let UnwindProductStage = { $unwind: "$product" };
         let data = await InvoiceProductsModel.aggregate([MatchStage, LookupStage, UnwindProductStage]);
-        return { status: "success", data: data };
+        return { status: "successfull", data: data };
     } catch (error) {
         return { status: "errors", message: error.message };
     }
