@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 // You already have these imports — just add the 2 lines below them
 
 const __filename = fileURLToPath(import.meta.url);  // ← add this
-const __dirname = path.dirname(__filename);           // ← add this
+const __dirname = path.dirname(__filename);           // ← add thi
 
 
 //import xss from 'xss-clean'
