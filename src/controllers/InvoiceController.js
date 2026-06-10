@@ -37,7 +37,7 @@ export const InvoiceProductList =async (req, res) => {
     let data = await InvoiceProductListService(req);
     res.status(200).json(data);
   } catch (error) {
-    res.status(400).json({ status: "error", message: error.message });
+    res.status(400).json({ status: "InvoiceProductList error", message: error.message });
   }
 };
 

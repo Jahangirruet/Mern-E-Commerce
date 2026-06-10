@@ -5,6 +5,15 @@ import cors from "cors";
 import helmet from "helmet";
 import hpp from "hpp";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// You already have these imports — just add the 2 lines below them
+
+const __filename = fileURLToPath(import.meta.url);  // ← add this
+const __dirname = path.dirname(__filename);           // ← add this
+
 
 //import xss from 'xss-clean'
 import {
@@ -28,21 +37,32 @@ const app = express();
 const port = PORT;
 
 // APP MIDDLEWARES
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(cors());
 app.use(helmet());
 app.use(hpp());
-//app.use(xss())
-app.use(
-  rateLimit({
-    windowMs: REQUEST_TIME,
-    max: REQUEST_NUMBER,
-    message: "Too many requests from this IP, please try again in a minute",
-  })
-);
+app.use(rateLimit({
+  windowMs: REQUEST_TIME,
+  max: REQUEST_NUMBER,
+  message: "Too many requests from this IP, please try again in a minute",
+}));
 
+// Routes — API first
 app.use("/api", router);
+
+// Static frontend
+app.use(express.static(path.join(__dirname, "client", "dist")));
+
+// Catch-all for React Router — excludes /api paths
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
+
 
 //web cache
 app.set("cache", WEB_CACHE);
@@ -53,7 +73,7 @@ mongoose
     console.log("Database connected successfully");
   })
   .catch((err) => {
-    console.log("err");
+    console.log("database error err");
   });
 
 app.listen(port, () => {

@@ -89,7 +89,7 @@ export const WishListServices = async (req, res) => {
             ProjectionStage
         ]);
 
-        return { status: "success", message: data };
+        return { status: "success", data: data };
     } catch (error) {
         return { status: "errors", message: error.message };
     }

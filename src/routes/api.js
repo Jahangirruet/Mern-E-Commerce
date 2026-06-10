@@ -28,14 +28,20 @@ router.get('/ProductDetails/:ProductID',ProductController.ProductDetails)
 router.get('/ProductListByKeyword/:Keyword',ProductController.ProductListByKeyword)
 
 router.get('/ProductReviewList/:ProductID',ProductController.ProductReviewList)
+router.post('/ProductListByFilter',ProductController.ProductListByFilter)
 
 // Users
 
-router.get('/userotp/:email',UserController.UserOTP)
-router.get('/verifyotp/:email/:otp',UserController.VerifyLogin)
-router.post('/userlogout',AuthVerification,UserController.UserLogout)
+router.post('/userlogout', UserController.UserLogout)
 router.post('/CreateProfile',AuthVerification,UserController.CreateProfile)
 router.get('/readprofile',AuthVerification,UserController.ReadProfile)
+
+// Users password
+router.post('/userregistration/',UserController.UserRegistration)
+router.post('/login',UserController.VerifyLogin)
+
+
+
 
 // wishList
 
@@ -48,7 +54,7 @@ router.get('/WishList',AuthVerification,WishlistController.WishList)
 router.get('/cartlist',AuthVerification,CartListController.CartList)
 router.post('/savecartlist',AuthVerification,CartListController.SaveCartList)
 router.post('/updatecartlist/:cartID',AuthVerification,CartListController.UpdateCartList)
-router.delete('/removecartlist',AuthVerification,CartListController.RemoveCartList)
+router.post('/removecartlist',AuthVerification,CartListController.RemoveCartList)
 
 // Invoice and Payment
 
@@ -64,6 +70,7 @@ router.post('/PaymentIPN/:trxID',InvoiceController.PaymentIPN)
 
 // Features
 router.get('/features',FeaturesController.FeaturesController)
+router.get('/legaldetails/:type',FeaturesController.LegalDetails)
 
 // Create riview
 router.post('/createriview',AuthVerification,ProductController.CreateReview)
